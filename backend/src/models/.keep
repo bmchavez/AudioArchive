@@ -1,0 +1,3 @@
+In short terms, your model performs all operations on the data (be it incoming, outgoing, database, files ... data), and your view should take care of displaying the data. The controller should call the necessary model methods to get the data ready to be passed to the view. The controller shouldn't perform any changes to the data, but it should test it to get the necessary action done properly.
+
+Hope I made it clear enough, let me know if this doesn't clear things for you.
