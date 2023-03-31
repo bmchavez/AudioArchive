@@ -10,3 +10,15 @@ npm i --save-dev @types/morgan
 cd backend
 npm i http-errors
 npm i -D @types/http-errors
+```
+
+```bash
+# frontend
+npm install --save typescript @types/react @types/node
+
+touch tsconfig.json
+npm run dev
+npm install tailwindcss@latest postcss@latest autoprefixer@latest
+npx tailwindcss init -p
+touch styles/tailwind.css
+```

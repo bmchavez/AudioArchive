@@ -10,6 +10,7 @@ import { notFound } from './middleware/errorMiddleware';
 // TODO: Import and use colors middleware
 // TODO: Update validateEnv
 // TODO: Abstract into app.ts file?
+// TODO: Update PSQL version
 
 const app = express();
 
