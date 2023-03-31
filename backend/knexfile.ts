@@ -13,6 +13,7 @@
  * @type { Object.<string, import("knex").Knex.Config> }
  */
 module.exports = {
+  // TODO: Change password?
   development: {
     client: 'postgresql',
     connection: {
@@ -20,10 +21,12 @@ module.exports = {
       user: 'benchavez',
       password: 'postgres',
     },
+    // TODO: Review
     pool: {
       min: 2,
       max: 10,
     },
+    // TODO: Review
     migrations: {
       // tableName: 'knex_migrations',
       directory: './src/database/migrations',

@@ -2,10 +2,14 @@
 import 'dotenv/config';
 import express from 'express';
 import env from './util/validateEnv';
-import db from './config/db';
+// import db from './config/db';
 import projectFileRoutes from './routes/projectFileRoutes';
 import morgan from 'morgan';
 import { notFound } from './middleware/errorMiddleware';
+
+// TODO: Import and use colors middleware
+// TODO: Update validateEnv
+// TODO: Abstract into app.ts file?
 
 const app = express();
 
