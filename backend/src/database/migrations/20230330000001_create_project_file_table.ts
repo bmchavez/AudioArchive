@@ -1,5 +1,7 @@
 import { Knex } from 'knex';
 
+// TODO: DATABASE RECORD TIMESAMPS AREN'T UPDATING WHEN RECORDS ARE UPDATED
+
 exports.up = async function (knex: Knex): Promise<void> {
   await knex.schema.createTable('project_files', (table) => {
     table.bigIncrements('id').primary();
@@ -22,11 +24,9 @@ exports.down = function (knex: Knex): Promise<void> {
   return knex.schema.dropTable('project_files');
 };
 
-
-
-    // t.increments('id').primary().unsigned();
-    // t.string('username').unique().index();
-    // t.string('password');
-    // t.string('email').unique().index();
-    // t.timestamp('created_at').defaultTo(knex.fn.now());
-    // t.timestamp('updated_at').defaultTo(knex.fn.now());
+// t.increments('id').primary().unsigned();
+// t.string('username').unique().index();
+// t.string('password');
+// t.string('email').unique().index();
+// t.timestamp('created_at').defaultTo(knex.fn.now());
+// t.timestamp('updated_at').defaultTo(knex.fn.now());

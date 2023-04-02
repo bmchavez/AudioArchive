@@ -59,3 +59,38 @@ export const getProjectFileById: RequestHandler = asyncHandler(
     res.status(200).json(projectFile);
   }
 );
+
+export const updateProjectFile: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const id = BigInt(req.params.id);
+    const { name, program, genre } = req.body;
+
+    // TODO: Input validation can be added here
+
+    const projectFile = await ProjectFileModel.updateProjectFile({
+      id,
+      name,
+      program,
+      genre,
+    });
+
+    res
+      .status(200)
+      .json({ projectFile, message: 'Project file updated successfully' });
+  }
+);
+
+export const deleteProjectFile: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const id = BigInt(req.params.id);
+    const projectFile = await ProjectFileModel.getProjectFileById({ id });
+
+    if (projectFile) {
+      await ProjectFileModel.deleteProjectFile({ id });
+      res.status(200).json({ message: 'Project file deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Project file not found' });
+      throw new Error('Project file not found');
+    }
+  }
+);

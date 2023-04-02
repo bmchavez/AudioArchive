@@ -1,5 +1,6 @@
 import db from '../config/db';
 import { Knex } from 'knex';
+
 import {
   CreateProjectFileParams,
   ProjectFile,
@@ -8,6 +9,13 @@ import {
 
 interface GetProjectFileByIdParams {
   id: bigint;
+}
+
+interface UpdateProjectFileParams {
+  id: bigint;
+  name?: string;
+  program?: string;
+  genre?: string;
 }
 
 class projectFileModel {
@@ -59,6 +67,41 @@ class projectFileModel {
     const projectFile: Knex.Raw = await db.raw(query, bindings);
 
     return (projectFile as unknown as RawResult).rows[0];
+  }
+
+  async updateProjectFile(
+    params: UpdateProjectFileParams
+  ): Promise<ProjectFile> {
+    const { id, name, program, genre } = params;
+
+    const query = `
+      UPDATE project_files
+      SET name = ?, program = ?, genre = ?
+      WHERE id = ?
+      RETURNING *;
+    `;
+
+    const bindings = [name, program, genre, id];
+    const projectFiles: Knex.Raw = await db.raw(query, bindings);
+    const [projectFile] = (projectFiles as unknown as RawResult).rows;
+
+    return projectFile;
+  }
+
+  async deleteProjectFile(
+    params: UpdateProjectFileParams
+  ): Promise<ProjectFile[]> {
+    const { id } = params;
+    const query = `
+      DELETE FROM project_files
+      WHERE id = ?
+      RETURNING *;
+    `;
+
+    const bindings = [id];
+    const projectFiles: Knex.Raw = await db.raw(query, bindings);
+
+    return (projectFiles as unknown as RawResult).rows;
   }
 }
 
