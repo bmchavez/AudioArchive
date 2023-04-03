@@ -24,7 +24,7 @@ exports.up = async function (knex: Knex): Promise<void> {
 
 // USE IF PGCRYPTO ALREADY EXISTS:
 exports.up = async function (knex: Knex): Promise<void> {
-  await knex.schema.createTable('project_files', (table) => {
+  await knex.schema.createTable('examples', (table) => {
     // table.increments('id').primary();
     // table.bigIncrements('id').primary();
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
@@ -43,5 +43,5 @@ exports.up = async function (knex: Knex): Promise<void> {
  * @returns {Promise<void>}
  */
 exports.down = function (knex: Knex): Promise<void> {
-  return knex.schema.dropTable('example_table');
+  return knex.schema.dropTable('examples');
 };

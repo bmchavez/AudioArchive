@@ -1,11 +1,10 @@
-// import express from 'express';
 import 'dotenv/config';
 import express from 'express';
 
 import env from './util/validateEnv';
 // import db from './config/db';
-import projectFileRoutes from './routes/projectFileRoutes';
-import googleAuthRoutes from './routes/googleAuthRoutes';
+
+import routes from './routes';
 import morgan from 'morgan';
 import { notFound } from './middleware/errorMiddleware';
 import passport from './middleware/passportMiddleware';
@@ -22,8 +21,8 @@ const app = express();
 app.use(sessionMiddleware);
 
 // Passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // Logging middleware
 app.use(morgan('dev'));
@@ -31,8 +30,7 @@ app.use(morgan('dev'));
 // So that express can receive json bodies
 app.use(express.json());
 
-app.use('/api/project_files', projectFileRoutes);
-app.use('/api/auth', googleAuthRoutes);
+app.use('/', routes);
 
 app.get('/', (req, res) => {
   res.send('Server Running');

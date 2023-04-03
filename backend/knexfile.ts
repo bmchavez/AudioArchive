@@ -33,6 +33,9 @@ module.exports = {
       // name: customMigrationNameGenerator,
       // tableName: 'knex_user_migrations',
     },
+    seeds: {
+      directory: './src/database/seeds',
+    },
   },
   production: {
     // configure production database here
