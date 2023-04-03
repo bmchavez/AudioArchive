@@ -3,52 +3,44 @@ import asyncHandler from 'express-async-handler';
 import { CreateProjectFileParams } from '../interfaces/ProjectFileInterfaces';
 import ProjectFileModel from '../models/projectFileModel';
 
-/**
- * @description:  Create new project file
- * @route:        POST /api/project_files
- * @access:       TODO: Private
- */
+/* POST /api/project_files - Create new Project File (Public) */
 export const createProjectFile: RequestHandler = asyncHandler(
   async (req, res): Promise<void> => {
-    const { name, program, genre }: CreateProjectFileParams = req.body;
+    const projectFile = await ProjectFileModel.createProjectFile(
+      req.body as CreateProjectFileParams
+    );
 
     // TODO: Input validation can be added here
 
-    const projectFile = await ProjectFileModel.createProjectFile({
-      name,
-      program,
-      genre,
-    });
-
-    res
-      .status(201)
-      .json({ projectFile, message: 'Project file created successfully' });
-    // } catch (error) {res.status(500).json({ error: 'An error occurred while creating the project file' });}
+    if (projectFile) {
+      res
+        .status(201)
+        .json({ projectFile, message: 'Project file created successfully' });
+    } else {
+      res.status(400).json({ message: 'Invalid project file data' });
+    }
   }
 );
 
-/**
- * @description:  Get all project files
- * @route:        GET /api/project_files
- * @access:       Public
- */
+/* GET /api/project_files - Get all Project Files (Public) */
 export const getProjectFiles: RequestHandler = asyncHandler(
   async (req, res) => {
     const projectFiles = await ProjectFileModel.getProjectFiles();
 
     // TODO: Input validation can be added here
 
-    res.status(200).json(projectFiles);
-
-    // res.status(500).json({ error: 'An error occurred while fetching the project files' });
+    if (projectFiles) {
+      res.status(200).json({
+        projectFiles,
+        message: 'Project files retrieved successfully',
+      });
+    } else {
+      res.status(404).json({ message: 'Project files not found' });
+    }
   }
 );
 
-/**
- * @description:  Get project file by id
- * @route:        GET /api/project_files/:id
- * @access:       Public
- */
+/** GET /api/project_file/:id - Get Project File by ID (Public) */
 export const getProjectFileById: RequestHandler = asyncHandler(
   async (req, res) => {
     const id = BigInt(req.params.id);
@@ -56,30 +48,49 @@ export const getProjectFileById: RequestHandler = asyncHandler(
 
     // TODO: Input validation can be added here ??
 
-    res.status(200).json(projectFile);
+    if (projectFile) {
+      res
+        .status(200)
+        .json({ projectFile, message: 'Project file retrieved successfully' });
+    } else {
+      res.status(404).json({ message: 'Project file not found' });
+    }
   }
 );
 
+/** PUT /api/project_file/:id - Get Project File by ID & update (Public) */
 export const updateProjectFile: RequestHandler = asyncHandler(
   async (req, res) => {
     const id = BigInt(req.params.id);
-    const { name, program, genre } = req.body;
+    const existingProjectFile = await ProjectFileModel.getProjectFileById({
+      id,
+    });
+
+    if (!existingProjectFile) {
+      res.status(404).json({ message: 'Project file not found' });
+      return;
+    }
 
     // TODO: Input validation can be added here
 
-    const projectFile = await ProjectFileModel.updateProjectFile({
+    const updatedProjectFile = await ProjectFileModel.updateProjectFile(
       id,
-      name,
-      program,
-      genre,
-    });
+      existingProjectFile,
+      req.body as Partial<CreateProjectFileParams>
+    );
 
-    res
-      .status(200)
-      .json({ projectFile, message: 'Project file updated successfully' });
+    if (updatedProjectFile) {
+      res.status(200).json({
+        updatedProjectFile,
+        message: 'Project file updated successfully',
+      });
+    } else {
+      res.status(400).json({ message: 'Invalid project file data' });
+    }
   }
 );
 
+/** DELETE /api/project_file/:id - Get Project File by ID & delete (Public) */
 export const deleteProjectFile: RequestHandler = asyncHandler(
   async (req, res) => {
     const id = BigInt(req.params.id);
@@ -94,3 +105,26 @@ export const deleteProjectFile: RequestHandler = asyncHandler(
     }
   }
 );
+
+// export const deleteProjectFile: RequestHandler = asyncHandler(
+//   async (req, res) => {
+//     const id = BigInt(req.params.id);
+//     const projectFile = await ProjectFileModel.getProjectFileById({ id });
+
+//     if (!projectFile) {
+//       res.status(404).json({ message: 'Project file not found' });
+//       return;
+//     }
+
+//     const deletedProjectFile = await ProjectFileModel.deleteProjectFile({ id });
+
+//     if (deletedProjectFile) {
+//       res.status(200).json({
+//         deletedProjectFile,
+//         message: 'Project file deleted successfully',
+//       });
+//     } else {
+//       res.status(500).json({ message: 'Failed to delete project file' });
+//     }
+//   }
+// );

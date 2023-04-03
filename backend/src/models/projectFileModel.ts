@@ -20,8 +20,9 @@ interface UpdateProjectFileParams {
 
 class projectFileModel {
   async createProjectFile(
-    params: CreateProjectFileParams
+    updateParams: CreateProjectFileParams
   ): Promise<ProjectFile> {
+    const { name, program, genre } = updateParams;
     // KNEX QUERY BUILDER
     // const [projectFile] = await db<ProjectFile>('project_files')
     //   .insert({
@@ -34,13 +35,13 @@ class projectFileModel {
     // return projectFile;
 
     // RAW QUERY BUILDER
-    const query = `
+    const qs = `
       INSERT INTO project_files (name, program, genre)
       VALUES (?, ?, ?)
       RETURNING *;
     `;
-    const bindings = [params.name, params.program, params.genre];
-    const projectFiles: Knex.Raw = await db.raw(query, bindings);
+    const bindings = [name, program, genre];
+    const projectFiles: Knex.Raw = await db.raw(qs, bindings);
     const [projectFile] = (projectFiles as unknown as RawResult).rows;
 
     return projectFile;
@@ -52,8 +53,8 @@ class projectFileModel {
     // return projectFiles;
 
     // RAW QUERY BUILDER
-    const query = `SELECT * FROM project_files;`;
-    const projectFiles: Knex.Raw = await db.raw(query);
+    const qs = `SELECT * FROM project_files;`;
+    const projectFiles: Knex.Raw = await db.raw(qs);
 
     return (projectFiles as unknown as RawResult).rows;
   }
@@ -62,27 +63,39 @@ class projectFileModel {
     params: GetProjectFileByIdParams
   ): Promise<ProjectFile> {
     // RAW QUERY BUILDER
-    const query = `SELECT * FROM project_files WHERE id = ?;`;
+    const qs = `SELECT * FROM project_files WHERE id = ?;`;
     const bindings = [params.id];
-    const projectFile: Knex.Raw = await db.raw(query, bindings);
+    const projectFile: Knex.Raw = await db.raw(qs, bindings);
 
     return (projectFile as unknown as RawResult).rows[0];
   }
 
   async updateProjectFile(
-    params: UpdateProjectFileParams
+    id: bigint,
+    project_file: ProjectFile,
+    updateParams: Partial<UpdateProjectFileParams>
   ): Promise<ProjectFile> {
-    const { id, name, program, genre } = params;
+    // const { name, program, genre } = updateParams;
 
-    const query = `
+    const updatedParams = {
+      ...project_file,
+      ...updateParams,
+    };
+
+    const qs = `
       UPDATE project_files
       SET name = ?, program = ?, genre = ?
       WHERE id = ?
       RETURNING *;
     `;
 
-    const bindings = [name, program, genre, id];
-    const projectFiles: Knex.Raw = await db.raw(query, bindings);
+    const bindings = [
+      updatedParams.name,
+      updatedParams.program,
+      updatedParams.genre,
+      id,
+    ];
+    const projectFiles: Knex.Raw = await db.raw(qs, bindings);
     const [projectFile] = (projectFiles as unknown as RawResult).rows;
 
     return projectFile;
@@ -92,6 +105,7 @@ class projectFileModel {
     params: UpdateProjectFileParams
   ): Promise<ProjectFile[]> {
     const { id } = params;
+
     const query = `
       DELETE FROM project_files
       WHERE id = ?

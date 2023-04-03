@@ -2,13 +2,13 @@ import { Knex } from 'knex';
 import db from '../config/db';
 
 import User, {
-  createUserParams,
+  CreateUpdateUserParams,
   GetUserByIdParams,
   RawResult,
 } from '../interfaces/UserInterfaces';
 
 class UserModel {
-  async createUser(params: createUserParams): Promise<User> {
+  async createUser(params: CreateUpdateUserParams): Promise<User> {
     const { username, email, is_admin, hashed_password, salt } = params;
 
     const query = `
@@ -45,13 +45,63 @@ class UserModel {
 
     // return user;
 
-    // RAW QUERY BUILDER
-    const sq = `SELECT * FROM users WHERE id = ?;`;
-    const bindings = [id];
+    console.log(id);
 
-    const user: Knex.Raw = await db.raw(sq, bindings);
+    // RAW QUERY BUILDER
+    const qs = `SELECT * FROM users WHERE id = ?;`;
+    const bindings = [id];
+    const user: Knex.Raw = await db.raw(qs, bindings);
 
     return (user as unknown as RawResult).rows[0];
   }
+
+  async updateUser(
+    id: string,
+    user: User,
+    updateParams: Partial<CreateUpdateUserParams>
+  ): Promise<User | null> {
+    // const { username, email, is_admin, hashed_password, salt } = updateParams;
+
+    const updatedParams = {
+      ...user,
+      ...updateParams,
+    };
+
+    const qs = `
+      UPDATE users
+      SET username = ?, email = ?, is_admin = ?, hashed_password = ?, salt = ?
+      WHERE id = ?
+      RETURNING *;
+    `;
+
+    const bindings = [
+      updatedParams.username,
+      updatedParams.email,
+      updatedParams.is_admin,
+      updatedParams.hashed_password,
+      updatedParams.salt,
+      id,
+    ];
+
+    const users: Knex.Raw = await db.raw(qs, bindings);
+    const [updatedUser] = (users as unknown as RawResult).rows;
+
+    return updatedUser || null;
+  }
+
+  async deleteUser(id: string): Promise<User | null> {
+    const qs = `
+      DELETE FROM users
+      WHERE id = ?
+      RETURNING *;
+    `;
+
+    const bindings = [id];
+    const users: Knex.Raw = await db.raw(qs, bindings);
+    const [deletedUser] = (users as unknown as RawResult).rows;
+
+    return deletedUser || null;
+  }
 }
+
 export default new UserModel();

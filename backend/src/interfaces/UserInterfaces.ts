@@ -28,7 +28,8 @@ export default interface User {
 //   salt: Buffer;
 // }
 
-export interface createUserParams {
+export interface CreateUpdateUserParams {
+  id?: string;
   username: string;
   email: string;
   is_admin: boolean;
